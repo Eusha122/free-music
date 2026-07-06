@@ -23,11 +23,11 @@ services:
     environment:
       DATABASE_URL: postgresql://freetune:${POSTGRES_PASSWORD}@db:5432/freetune
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
-      JAMENDO_CLIENT_ID: ${JAMENDO_CLIENT_ID:?set JAMENDO_CLIENT_ID in .env}
+      JAMENDO_CLIENT_ID: ${JAMENDO_CLIENT_ID:-}
       AUDIUS_APP_NAME: ${AUDIUS_APP_NAME:-FreeTuneApp}
       PORT: 3000
     ports:
-      - "3000:3000"
+      - "3001:3000"
     command: sh -c "npx prisma migrate deploy && node dist/server.js"
 
 volumes:
