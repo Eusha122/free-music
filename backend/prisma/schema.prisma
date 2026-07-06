@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A track normalized from any upstream source (Jamendo, Audius, ...).
+// sourceId + source together uniquely identify the upstream track.
+model Track {
+  id          String   @id @default(uuid())
+  source      String // "jamendo" | "audius"
+  sourceId    String
+  title       String
+  artistName  String
+  albumName   String?
+  durationSec Int
+  streamUrl   String
+  artworkUrl  String?
+  genres      String[] // normalized lowercase tags used for recommendations
+  license     String? // e.g. "cc-by", "cc-by-nc" - respected when allowing downloads
+  createdAt   DateTime @default(now())
+
+  likes    Like[]
+  plays    PlayHistory[]
+  inLists  PlaylistTrack[]
+
+  @@unique([source, sourceId])
+  @@index([genres])
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  playlists Playlist[]
+  likes     Like[]
+  plays     PlayHistory[]
+}
+
+model Playlist {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  tracks PlaylistTrack[]
+}
+
+model PlaylistTrack {
+  id         String   @id @default(uuid())
+  playlistId String
+  trackId    String
+  position   Int
+  addedAt    DateTime @default(now())
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  track    Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, trackId])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  trackId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trackId])
+}
+
+model PlayHistory {
+  id       String   @id @default(uuid())
+  userId   String
+  trackId  String
+  playedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track Track @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([userId, playedAt])
+}
