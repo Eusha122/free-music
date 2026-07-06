@@ -18,7 +18,8 @@ android {
 
         // Point this at your VPS API before building a release, e.g.
         // https://api.yourdomain.com
-        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:3000/\"")
+        buildConfigField("String", "API_BASE_URL", "\"http://10.0.2.2:3001/\"")
+
     }
 
     buildTypes {
