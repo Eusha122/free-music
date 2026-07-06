@@ -7,6 +7,7 @@ import com.freetune.app.data.api.NetworkModule
 import com.freetune.app.data.repository.AuthRepository
 import com.freetune.app.data.repository.CatalogRepository
 import com.freetune.app.data.repository.PlaylistRepository
+import com.freetune.app.playback.DownloadRepository
 import com.freetune.app.playback.PlayerController
 
 class FreeTuneApp : Application() {
@@ -22,6 +23,8 @@ class FreeTuneApp : Application() {
         private set
     lateinit var playerController: PlayerController
         private set
+    lateinit var downloadRepository: DownloadRepository
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -31,5 +34,6 @@ class FreeTuneApp : Application() {
         catalogRepository = CatalogRepository(apiService)
         playlistRepository = PlaylistRepository(apiService)
         playerController = PlayerController(this)
+        downloadRepository = DownloadRepository(this)
     }
 }
