@@ -1,0 +1,19 @@
+# IDE
+.idea/
+*.iml
+
+# Android
+android/local.properties
+android/.gradle/
+android/.kotlin/
+android/**/build/
+android/captures/
+android/**/.externalNativeBuild/
+android/**/.cxx/
+*.apk
+*.aab
+
+# Backend
+backend/node_modules/
+backend/dist/
+backend/.env

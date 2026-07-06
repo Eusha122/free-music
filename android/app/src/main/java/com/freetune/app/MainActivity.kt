@@ -13,7 +13,9 @@ import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -22,8 +24,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.freetune.app.ui.ViewModelFactory
-import com.freetune.app.ui.screens.auth.AuthScreen
-import com.freetune.app.ui.screens.auth.AuthViewModel
 import com.freetune.app.ui.screens.home.HomeScreen
 import com.freetune.app.ui.screens.home.HomeViewModel
 import com.freetune.app.ui.screens.library.LibraryScreen
@@ -34,6 +34,10 @@ import com.freetune.app.ui.screens.player.PlayerViewModel
 import com.freetune.app.ui.screens.search.SearchScreen
 import com.freetune.app.ui.screens.search.SearchViewModel
 import com.freetune.app.ui.theme.FreeTuneTheme
+import com.freetune.app.ui.theme.HairlineBorder
+import com.freetune.app.ui.theme.SurfaceCardRaised
+import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 
 private data class Tab(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector)
 
@@ -76,15 +80,15 @@ class MainActivity : ComponentActivity() {
 private fun FreeTuneRoot(app: FreeTuneApp) {
     val factory = remember { ViewModelFactory(app) }
     val token by app.tokenStore.tokenFlow.collectAsState(initial = null)
-    var isAuthChecked by remember { mutableStateOf(false) }
 
-    LaunchedEffect(token) { isAuthChecked = true }
-
-    if (!isAuthChecked) return
+    // No login screen: silently provision (or restore) an anonymous session
+    // the first time there's no token, then drop straight into the app.
+    LaunchedEffect(Unit) { app.authRepository.ensureSession() }
 
     if (token == null) {
-        val authViewModel: AuthViewModel = viewModel(factory = factory)
-        AuthScreen(authViewModel, onAuthenticated = { })
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
     } else {
         MainScreen(factory)
     }
@@ -99,9 +103,14 @@ private fun MainScreen(factory: ViewModelFactory) {
     Box(Modifier.fillMaxSize()) {
         Scaffold(
             bottomBar = {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .background(SurfaceCardRaised)
+                        .border(width = 1.dp, color = HairlineBorder)
+                        .fillMaxWidth(),
+                ) {
                     MiniPlayer(playerViewModel, onExpand = { isPlayerExpanded = true })
-                    NavigationBar {
+                    NavigationBar(containerColor = androidx.compose.ui.graphics.Color.Transparent, tonalElevation = 0.dp) {
                         val backStackEntry by navController.currentBackStackEntryAsState()
                         val currentDestination = backStackEntry?.destination
                         tabs.forEach { tab ->

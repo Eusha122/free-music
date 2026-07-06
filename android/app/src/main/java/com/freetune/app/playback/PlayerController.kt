@@ -50,7 +50,7 @@ class PlayerController(private val context: Context) {
                 _state.value = _state.value.copy(currentTrack = track, positionMs = 0)
             }
 
-            override fun events(player: Player, events: Player.Events) {
+            override fun onEvents(player: Player, events: Player.Events) {
                 _state.value = _state.value.copy(
                     positionMs = player.currentPosition,
                     durationMs = player.duration.coerceAtLeast(0),

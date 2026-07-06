@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.freetune.app.FreeTuneApp
-import com.freetune.app.ui.screens.auth.AuthViewModel
 import com.freetune.app.ui.screens.home.HomeViewModel
 import com.freetune.app.ui.screens.library.LibraryViewModel
 import com.freetune.app.ui.screens.player.PlayerViewModel
@@ -14,7 +13,6 @@ class ViewModelFactory(private val app: FreeTuneApp) : ViewModelProvider.Factory
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         return when (modelClass) {
-            AuthViewModel::class.java -> AuthViewModel(app.authRepository)
             HomeViewModel::class.java -> HomeViewModel(app.catalogRepository, app.playerController, app.downloadRepository)
             SearchViewModel::class.java -> SearchViewModel(app.catalogRepository, app.playerController, app.downloadRepository)
             LibraryViewModel::class.java -> LibraryViewModel(app.catalogRepository, app.playlistRepository, app.playerController, app.downloadRepository)
